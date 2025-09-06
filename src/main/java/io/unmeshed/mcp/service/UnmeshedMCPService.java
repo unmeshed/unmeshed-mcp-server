@@ -16,12 +16,32 @@ public class UnmeshedMCPService {
 
     private final UnmeshedClient unmeshedClient;
 
-    public ProcessData startProcessWithPojo(ProcessRequestData processRequestData) {
-        if (processRequestData == null || processRequestData.getName() == null) {
-            return ProcessData.builder()
-                    .output(Map.of("error", "Process name is required"))
-                    .build();
-        }
+    @Tool(
+            description = "Starts a new Unmeshed process execution by name.\n" +
+                    "Parameters:\n" +
+                    "- name: The unique name of the process to start.\n" +
+                    "- namespace: The namespace under which the process should run. Defaults to 'default' if null.\n" +
+                    "- version: The version number of the process definition to use. If null, the latest version is used.\n" +
+                    "- requestId: An optional unique identifier for this specific request. Useful for tracking or retrying processes.\n" +
+                    "- correlationId: An optional identifier to correlate this process execution with other related processes or events.\n" +
+                    "- input: A map of input values for the process execution, with keys as parameter names and values as their corresponding values."
+    )
+    public ProcessData startUnmeshedProcessByName(
+            String name,
+            String namespace,
+            Integer version,
+            String requestId,
+            String correlationId,
+            Map<String, Object> input) {
+
+        ProcessRequestData request = ProcessRequestData.builder()
+                .name(name)
+                .namespace(namespace != null ? namespace : "default")
+                .version(version)
+                .requestId(requestId)
+                .correlationId(correlationId)
+                .input(input)
+                .build();
 
         try {
             return unmeshedClient.runProcessAsync(processRequestData);
@@ -30,29 +50,5 @@ public class UnmeshedMCPService {
                     .output(Map.of("error", "Failed to start process: " + e.getMessage()))
                     .build();
         }
-    }
-
-    @Tool(
-            description = "Starts a new Unmeshed process execution.\n" +
-                    "Parameters:\n" +
-                    "- name: The unique name of the process to start.\n" +
-                    "- namespace: The namespace under which the process should run. Defaults to 'default' if null.\n" +
-                    "- version: The version number of the process definition to use. If null, the latest version is used.\n" +
-                    "- input: A map of input values for the process execution, with keys as parameter names and values as their corresponding values."
-    )
-    public ProcessData startUnmeshedProcessByName(
-            String name,
-            String namespace,
-            Integer version,
-            Map<String, Object> input) {
-
-        ProcessRequestData request = ProcessRequestData.builder()
-                .name(name)
-                .namespace(namespace != null ? namespace : "default")
-                .version(version)
-                .input(input)
-                .build();
-
-        return startProcessWithPojo(request);
     }
 }
