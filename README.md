@@ -75,9 +75,9 @@ Edit `claude_desktop_config.json` (See Anthropic Claude docs for this):
 
 ### 3. Available MCP Tools
 
-| Tool Name | Description | Parameters                           |
-|-----------|-------------|--------------------------------------|
-| `startUnmeshedProcessByName` | Start a new unmeshed process | `name` `namespace` `version` `input` |
+| Tool Name | Description | Parameters                                                       |
+|-----------|-------------|------------------------------------------------------------------|
+| `startUnmeshedProcessByName` | Start a new unmeshed process | `name` `namespace` `version` `input` `requestId` `correlationId` |
 
 
 ### Adding New Tools
