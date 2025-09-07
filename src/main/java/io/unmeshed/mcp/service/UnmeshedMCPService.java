@@ -87,7 +87,7 @@ public class UnmeshedMCPService {
                     "This tool allows sending a payload to a specified endpoint, optionally including a request ID and correlation ID for tracking. " +
                     "The API call type can be specified to control execution behavior."
     )
-    public JsonNode invokeApiMappingPost(
+    public JsonNode invokeUnmeshedApiMappingPost(
             @ToolParam(description = "The target API endpoint path or identifier to be invoked.") String endpoint,
             @ToolParam(description = "An optional unique identifier for this specific request, useful for tracking or retrying calls.") String requestId,
             @ToolParam(description = "An optional identifier to correlate this API call with related requests or processes.") String correlationId,
