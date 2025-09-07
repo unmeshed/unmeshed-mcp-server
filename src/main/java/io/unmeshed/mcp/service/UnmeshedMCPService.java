@@ -1,5 +1,7 @@
 package io.unmeshed.mcp.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.unmeshed.api.common.ApiCallType;
 import io.unmeshed.api.common.ProcessData;
 import io.unmeshed.api.common.ProcessRequestData;
 import io.unmeshed.client.UnmeshedClient;
@@ -78,6 +80,21 @@ public class UnmeshedMCPService {
                     .output(Map.of("error", "Failed to start process: " + e.getMessage()))
                     .build();
         }
+    }
+
+    @Tool(
+            description = "Invokes an API mapping through the Unmeshed orchestration engine using a POST request. " +
+                    "This tool allows sending a payload to a specified endpoint, optionally including a request ID and correlation ID for tracking. " +
+                    "The API call type can be specified to control execution behavior."
+    )
+    public JsonNode invokeApiMappingPost(
+            @ToolParam(description = "The target API endpoint path or identifier to be invoked.") String endpoint,
+            @ToolParam(description = "An optional unique identifier for this specific request, useful for tracking or retrying calls.") String requestId,
+            @ToolParam(description = "An optional identifier to correlate this API call with related requests or processes.") String correlationId,
+            @ToolParam(description = "The request payload as a map of key-value pairs to be sent to the endpoint.") Map<String, Object> inputPayload,
+            @ToolParam(description = "Specifies the type of API call (e.g., SYNC, ASYNC, STREAM) that determines how the request is executed with keys as parameter names and values as their corresponding values.") ApiCallType apiCallType
+    ) {
+        return unmeshedClient.invokeApiMappingPost(endpoint, requestId, correlationId, inputPayload, apiCallType);
     }
 
 }
