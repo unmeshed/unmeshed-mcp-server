@@ -5,6 +5,7 @@ import io.unmeshed.api.common.ProcessRequestData;
 import io.unmeshed.client.UnmeshedClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -13,26 +14,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UnmeshedMCPService {
 
-
     private final UnmeshedClient unmeshedClient;
 
     @Tool(
-            description = "Starts a new Unmeshed process execution by name.\n" +
-                    "Parameters:\n" +
-                    "- name: The unique name of the process to start.\n" +
-                    "- namespace: The namespace under which the process should run. Defaults to 'default' if null.\n" +
-                    "- version: The version number of the process definition to use. If null, the latest version is used.\n" +
-                    "- requestId: An optional unique identifier for this specific request. Useful for tracking or retrying processes.\n" +
-                    "- correlationId: An optional identifier to correlate this process execution with other related processes or events.\n" +
-                    "- input: A map of input values for the process execution, with keys as parameter names and values as their corresponding values."
+            description = "Starts a new Unmeshed process execution by name"
     )
     public ProcessData startUnmeshedProcessByName(
-            String name,
-            String namespace,
-            Integer version,
-            String requestId,
-            String correlationId,
-            Map<String, Object> input) {
+            @ToolParam(description = "The unique name of the process to start.") String name,
+            @ToolParam(description = "The namespace under which the process should run. Defaults to 'default' if null.") String namespace,
+            @ToolParam(description = "The version number of the process definition to use. If null, the latest version is used.") Integer version,
+            @ToolParam(description = "An optional unique identifier for this specific request. Useful for tracking or retrying processes.") String requestId,
+            @ToolParam(description = "An optional identifier to correlate this process execution with other related processes or events.") String correlationId,
+            @ToolParam(description = "A map of input values for the process execution, with keys as parameter names and values as their corresponding values.") Map<String, Object> input) {
 
         ProcessRequestData request = ProcessRequestData.builder()
                 .name(name)
@@ -44,7 +37,7 @@ public class UnmeshedMCPService {
                 .build();
 
         try {
-            return unmeshedClient.runProcessAsync(processRequestData);
+            return unmeshedClient.runProcessAsync(request);
         } catch (Exception e) {
             return ProcessData.builder()
                     .output(Map.of("error", "Failed to start process: " + e.getMessage()))
