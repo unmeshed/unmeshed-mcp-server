@@ -77,7 +77,9 @@ Edit `claude_desktop_config.json` (See Anthropic Claude docs for this):
 
 | Tool Name | Description | Parameters                                                       |
 |-----------|-------------|------------------------------------------------------------------|
-| `startUnmeshedProcessByName` | Start a new unmeshed process | `name` `namespace` `version` `input` `requestId` `correlationId` |
+| `startUnmeshedProcessAsynchronouslyByName` | Start a new unmeshed process in Asynchronous mode | `name` `namespace` `version` `input` `requestId` `correlationId` |
+| `startUnmeshedProcessAsynchronouslyByName` | Start a new unmeshed process in Synchronous mode  | `name` `namespace` `version` `input` `requestId` `correlationId` |
+| `startUnmeshedProcessSynchronouslyByName`  | Invoke Unmeshed Post Api Mappings (Webhooks)      | `name` `namespace` `version` `input` `requestId` `correlationId` |
 
 
 ### Adding New Tools
