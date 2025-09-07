@@ -17,12 +17,15 @@ public class UnmeshedMCPService {
     private final UnmeshedClient unmeshedClient;
 
     @Tool(
-            description = "Starts a new Unmeshed process execution by name"
+            description = "Starts a new Unmeshed process asynchronously using its unique name, without waiting for completion. " +
+                    "This tool is useful when you need to trigger a process in the background using unmeshed orchestration engine and continue with other tasks. " +
+                    "It supports specifying namespace, version, request ID, correlation ID, and input parameters. " +
+                    "Returns process execution details or an error message if the process could not be started."
     )
-    public ProcessData startUnmeshedProcessByName(
+    public ProcessData startUnmeshedProcessAsynchronouslyByName(
             @ToolParam(description = "The unique name of the process to start.") String name,
             @ToolParam(description = "The namespace under which the process should run. Defaults to 'default' if null.") String namespace,
-            @ToolParam(description = "The version number of the process definition to use. If null, the latest version is used.") Integer version,
+            @ToolParam(description = "An optional version number of the process definition to use.") Integer version,
             @ToolParam(description = "An optional unique identifier for this specific request. Useful for tracking or retrying processes.") String requestId,
             @ToolParam(description = "An optional identifier to correlate this process execution with other related processes or events.") String correlationId,
             @ToolParam(description = "A map of input values for the process execution, with keys as parameter names and values as their corresponding values.") Map<String, Object> input) {
@@ -44,4 +47,37 @@ public class UnmeshedMCPService {
                     .build();
         }
     }
+
+    @Tool(
+            description = "Starts a new Unmeshed process synchronously using its unique name, waiting for the process to complete before returning. " +
+                    "This tool is useful when you need the final output of a process before proceeding with other tasks. " +
+                    "It uses the Unmeshed orchestration engine and supports specifying namespace, version, request ID, correlation ID, and input parameters. " +
+                    "Returns the final process execution details or an error message if the process could not be started or completed."
+    )
+    public ProcessData startUnmeshedProcessSynchronouslyByName(
+            @ToolParam(description = "The unique name of the process to start.") String name,
+            @ToolParam(description = "The namespace under which the process should run. Defaults to 'default' if null.") String namespace,
+            @ToolParam(description = "An optional version number of the process definition to use.") Integer version,
+            @ToolParam(description = "An optional unique identifier for this specific request. Useful for tracking or retrying processes.") String requestId,
+            @ToolParam(description = "An optional identifier to correlate this process execution with other related processes or events.") String correlationId,
+            @ToolParam(description = "A map of input values for the process execution, with keys as parameter names and values as their corresponding values.") Map<String, Object> input) {
+
+        ProcessRequestData request = ProcessRequestData.builder()
+                .name(name)
+                .namespace(namespace != null ? namespace : "default")
+                .version(version)
+                .requestId(requestId)
+                .correlationId(correlationId)
+                .input(input)
+                .build();
+
+        try {
+            return unmeshedClient.runProcessSync(request);
+        } catch (Exception e) {
+            return ProcessData.builder()
+                    .output(Map.of("error", "Failed to start process: " + e.getMessage()))
+                    .build();
+        }
+    }
+
 }
